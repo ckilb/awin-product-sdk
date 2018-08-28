@@ -1,0 +1,20 @@
+{
+    "name": "ckdot/awin-product-sdk",
+    "description": "An inofficial PHP SDK to grab product data from Awin.",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Christian Kilb",
+            "homepage": "https://github.com/ckdot"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "AwinProductSdk\\": "src/"
+        }
+    },
+    "require": {
+        "php": "^7.0",
+        "guzzlehttp/guzzle": "^6.3"
+    }
+}
