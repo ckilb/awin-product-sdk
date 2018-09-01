@@ -1,86 +1,133 @@
 <?php
 namespace AwinProductSdk\ValueObjects;
 
-class Advertiser
+use DateTime;
+
+class Advertiser extends DataObject
 {
-    /**
-     * @var int
-     */
-    protected $id;
+
+    const KEY_ID = 'Advertiser ID';
+    const KEY_NAME = 'Advertiser Name';
+    const KEY_PRIMARY_REGION = 'Primary Region';
+    const KEY_STATUS = 'Membership Status';
+    const KEY_FEED_ID = 'Feed ID';
+    const KEY_FEED_NAME = 'Feed Name';
+    const KEY_LANGUAGE = 'Language';
+    const KEY_VERTICAL = 'Vertical';
+    const KEY_LAST_IMPORTED  = 'Last Imported';
+    const KEY_LAST_CHECKED = 'Last Checked';
+    const KEY_PRODUCTS_COUNT = 'No of products';
+    const KEY_FEED_URL = 'URL';
 
     /**
-     * @var string
+     * @var array
      */
-    protected $name;
+    protected $data;
+
+
+
 
     /**
-     * @var string
+     * @return int|null
      */
-    protected $feedUrl;
-
-    /**
-     * @var int
-     */
-    protected $productsCount;
-
-    /**
-     * @var string
-     */
-    protected $status;
-
-    /**
-     * @param int $id
-     * @param string $name
-     * @param string $feedUrl
-     * @param int $productsCount
-     * @param string $status
-     */
-    public function __construct(int $id, string $name, string $feedUrl, int $productsCount, string $status)
+    public function getId(): ?int
     {
-        $this->id            = $id;
-        $this->name          = $name;
-        $this->feedUrl       = $feedUrl;
-        $this->productsCount = $productsCount;
-        $this->status        = $status;
+        return (int) $this->data[static::KEY_ID] ?? null;
     }
 
     /**
-     * @return int
+     * @return string|null
      */
-    public function getId(): int
+    public function getName(): ?string
     {
-        return $this->id;
+        return $this->data[static::KEY_NAME] ?? null;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getName(): string
+    public function getPrimaryRegion(): ?string
     {
-        return $this->name;
+        return $this->data[static::KEY_PRIMARY_REGION] ?? null;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getFeedUrl(): string
+    public function getStatus(): ?string
     {
-        return $this->feedUrl;
+        return $this->data[static::KEY_STATUS] ?? null;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getProductsCount(): int
+    public function getFeedId(): ?int
     {
-        return $this->productsCount;
+        return $this->data[static::KEY_FEED_ID] ?? null;
     }
 
     /**
-     * @return string
+     * @return string|null
      */
-    public function getStatus(): string
+    public function getFeedName(): ?string
     {
-        return $this->status;
+        return $this->data[static::KEY_NAME] ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getLanguage(): ?string
+    {
+        return $this->data[static::KEY_LANGUAGE] ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getVertical(): ?string
+    {
+        return $this->data[static::KEY_VERTICAL] ?? null;
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getLastImported(): ?DateTime
+    {
+        if (empty($this->data[static::KEY_LAST_IMPORTED])) {
+            return null;
+        }
+
+        return new DateTime($this->data[static::KEY_LAST_IMPORTED]);
+    }
+
+    /**
+     * @return DateTime|null
+     */
+    public function getLastChecked(): ?DateTime
+    {
+        if (empty($this->data[static::KEY_LAST_CHECKED])) {
+            return null;
+        }
+
+        return new DateTime($this->data[static::KEY_LAST_CHECKED]);
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getProductsCount(): ?int
+    {
+        return (int) $this->data[static::KEY_PRODUCTS_COUNT] ?? null;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getFeedUrl(): ?string
+    {
+        return $this->data[static::KEY_FEED_URL] ?? null;
     }
 }

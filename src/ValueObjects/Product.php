@@ -1,7 +1,7 @@
 <?php
 namespace AwinProductSdk\ValueObjects;
 
-class Product
+class Product extends DataObject
 {
     const KEY_ID          = 'aw_product_id';
     const KEY_NAME        = 'product_name';
@@ -13,28 +13,6 @@ class Product
     const KEY_PRICE       = 'search_price';
     const KEY_BRAND_NAME  = 'brand_name';
     const KEY_COLOR       = 'color';
-
-    /**
-     * @var string[]
-     */
-    protected $data;
-
-    /**
-     * @param string[] $data
-     */
-    public function __construct(array $data)
-    {
-        $this->data = $data;
-    }
-
-    /**
-     * @param string $key
-     * @return null|string
-     */
-    public function get(string $key): ?string
-    {
-        return $this->data[$key] ?? null;
-    }
 
     /**
      * @return int|null

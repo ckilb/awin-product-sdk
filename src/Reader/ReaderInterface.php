@@ -1,8 +1,9 @@
 <?php
 namespace AwinProductSdk\Reader;
 
+use AwinProductSdk\Collection\AdvertiserCollection;
+use AwinProductSdk\Collection\ProductCollection;
 use AwinProductSdk\ValueObjects\Advertiser;
-use AwinProductSdk\ValueObjects\Product;
 
 /**
  * @package AwinProductSdk\Client
@@ -13,20 +14,14 @@ interface ReaderInterface
 
     /**
      * @param string $feedListUrl
-     * @return Advertiser[]
+     * @return AdvertiserCollection
      */
-    public function getAdvertisers(string $feedListUrl): array;
-
-    /**
-     * @param string $feedListUrl
-     * @return Advertiser[]
-     */
-    public function getActiveAdvertisers(string $feedListUrl): array;
+    public function getAdvertisers(string $feedListUrl): AdvertiserCollection;
 
     /**
      * @param Advertiser $advertiser
-     * @return Product[]
+     * @return ProductCollection
      */
-    public function getProducts(Advertiser $advertiser);
+    public function getProducts(Advertiser $advertiser): ProductCollection;
 
 }

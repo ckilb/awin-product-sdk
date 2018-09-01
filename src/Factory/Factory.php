@@ -5,13 +5,14 @@ use AwinProductSdk\CsvParser\CsvParser;
 use AwinProductSdk\CsvParser\CsvParserInterface;
 use AwinProductSdk\Facade;
 use AwinProductSdk\FacadeInterface;
+use AwinProductSdk\Filter\Filter;
+use AwinProductSdk\Filter\FilterInterface;
 use AwinProductSdk\Reader\Reader;
 use AwinProductSdk\Reader\ReaderInterface;
-use AwinProductSdk\Updater\Updater;
-use AwinProductSdk\Updater\UpdaterInterface;
 use AwinProductSdk\ValueObjects\Config;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
+use Psr\SimpleCache\CacheInterface;
 
 class Factory
 {
@@ -24,13 +25,14 @@ class Factory
     {
         return new Facade(
             $config,
-            $this->createReader()
+            $this->createReader($config->getCache()),
+            $this->createFilter()
         );
     }
     /**
      * @return ClientInterface
      */
-    public function createClient(): ClientInterface
+    protected function createClient(): ClientInterface
     {
         return new Client();
     }
@@ -38,19 +40,30 @@ class Factory
     /**
      * @return CsvParserInterface
      */
-    public function createCsvParser(): CsvParserInterface
+    protected function createCsvParser(): CsvParserInterface
     {
         return new CsvParser();
     }
 
     /**
+     * @return FilterInterface
+     */
+    protected function createFilter(): FilterInterface
+    {
+        return new Filter();
+    }
+
+    /**
+     * @param CacheInterface $cache
+     *
      * @return ReaderInterface
      */
-    public function createReader(): ReaderInterface
+    protected function createReader(CacheInterface $cache): ReaderInterface
     {
         return new Reader(
             $this->createCsvParser(),
-            $this->createClient()
+            $this->createClient(),
+            $cache
         );
     }
 

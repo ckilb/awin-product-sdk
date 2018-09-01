@@ -1,8 +1,8 @@
 <?php
 namespace AwinProductSdk\CsvParser;
 
-use AwinProductSdk\ValueObjects\Advertiser;
-use AwinProductSdk\ValueObjects\Product;
+use AwinProductSdk\Collection\AdvertiserCollection;
+use AwinProductSdk\Collection\ProductCollection;
 
 /**
  * @package AwinProductSdk\Client
@@ -13,14 +13,14 @@ interface CsvParserInterface
 
     /**
      * @param string $csvContent
-     * @return Advertiser[]
+     * @return AdvertiserCollection
      */
-    public function parseAdvertisers(string $csvContent): array;
+    public function parseAdvertisers(string $csvContent): AdvertiserCollection;
 
     /**
      * @param string $csvContent
-     * @return Product[]
+     * @return ProductCollection
      */
-    public function parseProducts(string $csvContent): array;
+    public function parseProducts(string $csvContent): ProductCollection;
 
 }

@@ -1,6 +1,8 @@
 <?php
 namespace AwinProductSdk\ValueObjects;
 
+use Psr\SimpleCache\CacheInterface;
+
 class Config
 {
     /**
@@ -9,16 +11,23 @@ class Config
     protected $feedListUrl;
 
     /**
+     * @var CacheInterface
+     */
+    protected $cache;
+
+    /**
      * @var string
      */
-    protected $downloadDirectory;
+    protected $cachePrefix;
 
     /**
      * @param string $feedListUrl
+     * @param CacheInterface $cache
      */
-    public function __construct(string $feedListUrl)
+    public function __construct(string $feedListUrl, CacheInterface $cache)
     {
-        $this->feedListUrl       = $feedListUrl;
+        $this->feedListUrl = $feedListUrl;
+        $this->cache       = $cache;
     }
 
     /**
@@ -27,6 +36,22 @@ class Config
     public function getFeedListUrl(): string
     {
         return $this->feedListUrl;
+    }
+
+    /**
+     * @return CacheInterface
+     */
+    public function getCache(): CacheInterface
+    {
+        return $this->cache;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCachePrefix(): string
+    {
+        return $this->cachePrefix;
     }
 
 }

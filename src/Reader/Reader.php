@@ -1,11 +1,14 @@
 <?php
 namespace AwinProductSdk\Reader;
 
-use AwinProductSdk\Constants;
+use AwinProductSdk\Collection\AdvertiserCollection;
+use AwinProductSdk\Collection\ProductCollection;
 use AwinProductSdk\CsvParser\CsvParserInterface;
 use AwinProductSdk\ValueObjects\Advertiser;
-use AwinProductSdk\ValueObjects\Product;
 use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Exception\GuzzleException;
+use Psr\SimpleCache\CacheInterface;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * @package AwinProductSdk\Client
@@ -14,6 +17,7 @@ use GuzzleHttp\ClientInterface;
 class Reader implements ReaderInterface
 {
     const REQUEST_METHOD = 'GET';
+    const CACHE_PREFIX   = 'awin-product-sdk';
 
     /**
      * @var CsvParserInterface
@@ -26,52 +30,75 @@ class Reader implements ReaderInterface
     private $client;
 
     /**
+     * @var CacheInterface
+     */
+    private $cache;
+
+    /**
      * @param CsvParserInterface $csvParser
      * @param ClientInterface $client
+     * @param CacheInterface $cache
      */
-    public function __construct(CsvParserInterface $csvParser, ClientInterface $client)
+    public function __construct(CsvParserInterface $csvParser, ClientInterface $client, CacheInterface $cache)
     {
         $this->csvParser = $csvParser;
         $this->client    = $client;
+        $this->cache     = $cache;
     }
 
     /**
      * @param string $feedListUrl
-     * @return Advertiser[]
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return AdvertiserCollection
+     * @throws GuzzleException
+     * @throws InvalidArgumentException
      */
-    public function getAdvertisers(string $feedListUrl): array
+    public function getAdvertisers(string $feedListUrl): AdvertiserCollection
     {
-        $response = $this->client->request(static::REQUEST_METHOD, $feedListUrl);
+        $response    = $this->getResponse($feedListUrl);
+        $advertisers = $this->csvParser->parseAdvertisers($response);
 
-        return $this->csvParser->parseAdvertisers($response->getBody());
-    }
-
-    /**
-     * @param string $feedListUrl
-     * @return Advertiser[]
-     * @throws \GuzzleHttp\Exception\GuzzleException
-     */
-    public function getActiveAdvertisers(string $feedListUrl): array
-    {
-        $advertisers = $this->getAdvertisers($feedListUrl);
-
-        return array_filter($advertisers, function (Advertiser $advertiser) {
-            return Constants::ADVERTISER_STATUS_ACTIVE === $advertiser->getStatus();
-        });
+        return $advertisers;
     }
 
     /**
      * @param Advertiser $advertiser
-     * @return Product[]|
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @return ProductCollection
+     * @throws GuzzleException
+     * @throws InvalidArgumentException
      */
-    public function getProducts(Advertiser $advertiser): array
+    public function getProducts(Advertiser $advertiser): ProductCollection
     {
-        $response = $this->client->request(static::REQUEST_METHOD, $advertiser->getFeedUrl());
-        $content = gzdecode($response->getBody());
+        $response = $this->getResponse($advertiser->getFeedUrl());
+        $content = gzdecode($response);
 
-        return $this->csvParser->parseProducts($content);
+        $products = $this->csvParser->parseProducts($content);
+
+        return $products;
+    }
+
+    /**
+     * @param string $url
+     * @return string
+     * @throws InvalidArgumentException
+     * @throws GuzzleException
+     */
+    private function getResponse(string $url): string
+    {
+        $cacheKey = sprintf('%s-%s',
+            static::CACHE_PREFIX,
+            md5($url)
+        );
+
+        if ($this->cache->has($cacheKey)) {
+            return $this->cache->get($cacheKey);
+        }
+
+        $response = $this->client->request(static::REQUEST_METHOD, $url);
+        $body     = (string) $response->getBody();
+
+        $this->cache->set($cacheKey, $body);
+
+        return $body;
     }
 
 }

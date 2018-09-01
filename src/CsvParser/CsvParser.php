@@ -1,8 +1,8 @@
 <?php
 namespace AwinProductSdk\CsvParser;
 
-use AwinProductSdk\ValueObjects\Advertiser;
-use AwinProductSdk\ValueObjects\Product;
+use AwinProductSdk\Collection\AdvertiserCollection;
+use AwinProductSdk\Collection\ProductCollection;
 
 /**
  * @package AwinProductSdk\Client
@@ -19,49 +19,26 @@ class CsvParser implements CsvParserInterface
 
     /**
      * @param string $csvContent
-     * @return Advertiser[]
+     * @return AdvertiserCollection
      */
-    public function parseAdvertisers(string $csvContent): array
-    {
-        $lines = $this->parse($csvContent);
-        $advertisers = [];
-
-        foreach ($lines as $line) {
-            $advertisers[] = new Advertiser(
-                (int) $line[static::INDEX_ADVERTISER_ID],
-                $line[static::INDEX_ADVERTISER_NAME],
-                $line[static::INDEX_ADVERTISER_FEED_URL],
-                (int) $line[static::INDEX_ADVERTISER_PRODUCT_COUNT],
-                $line[static::INDEX_ADVERTISER_STATUS]
-            );
-        }
-
-        return $advertisers;
-    }
-
-    /**
-     * @param string $csvContent
-     * @return Product[]
-     */
-    public function parseProducts(string $csvContent): array
+    public function parseAdvertisers(string $csvContent): AdvertiserCollection
     {
         $lines = $this->parse($csvContent);
         $keys = array_shift($lines);
 
-        $products = [];
+        return new AdvertiserCollection($keys, $lines);
+    }
 
-        foreach ($lines as $line) {
-            $data = [];
+    /**
+     * @param string $csvContent
+     * @return ProductCollection
+     */
+    public function parseProducts(string $csvContent): ProductCollection
+    {
+        $lines = $this->parse($csvContent);
+        $keys = array_shift($lines);
 
-            foreach ($line as $index => $value) {
-                $key = $keys[$index];
-                $data[$key] = $value;
-            }
-
-            $products[] = new Product($data);
-        }
-
-        return $products;
+        return new ProductCollection($keys, $lines);
     }
 
     /**
