@@ -47,7 +47,7 @@ class CsvParser implements CsvParserInterface
      */
     private function parse(string $content): array
     {
-        $lines = str_getcsv($content, PHP_EOL);
+        $lines = str_getcsv($content, "\n");
 
         foreach ($lines as $index => $line) {
             $lines[$index] = str_getcsv($line);
